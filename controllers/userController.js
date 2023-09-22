@@ -46,7 +46,7 @@ const UserController = {
         const updatedUserData = req.body;
 
         try {
-            const updateUser = await User.findByIdAndUpdate(userId, updatedUserData, {
+            const updatedUser = await User.findByIdAndUpdate(userId, updatedUserData, {
                 new: true, // Return the updated user
             });
 
@@ -67,7 +67,7 @@ const UserController = {
         try {
             const deletedUser = await User.findByIdAndRemove(userId);
 
-            if(!deleteUser) {
+            if(!deletedUser) {
                 return res.status(404).json({ message: 'User not found'});
             }
             res.json({ message: 'User deleted successfully'});
@@ -77,4 +77,4 @@ const UserController = {
     },
 };
 
-module.exports = userController;
+module.exports = UserController;
