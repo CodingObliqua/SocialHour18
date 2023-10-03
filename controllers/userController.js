@@ -75,6 +75,61 @@ const UserController = {
             res.status(500).json({ error: 'Internal Sever error'});
         }
     },
+
+    // POST route to add a friend to a user's friend list
+    addFriend: async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            const friendId = req.params.friendId;
+
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found'});
+            }
+
+            // check if the friendId exist in the database
+            const friend = await User.findById(friendId);
+
+            if (!friend) {
+                return res.status(404).json({ message:'Friend not found'});
+            }
+
+            if (user.friends.includes(friendId)) {
+                return res.status(400).json({ message: 'Friend already added' });
+            }
+
+            user.friends.push(friendId);
+            const updatedUser = await user.save();
+
+            res.status(201).json(updatedUser);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    // DELETE route to remove a friend from user's friends list
+    removeFriend: async (req, res) => {
+        const userId = req.params.userId;
+        const friendId = req.params.friendId;
+
+        try {
+            const user = await User.findById(userId);
+
+            if(!user) {
+                return res.status(404).json({ message: 'User not found '});
+            }
+
+            user.friends = user.friends.filter(friend => friend.toString() !== friendId);
+            await user.save();
+
+            res.json({message:'Friend removed successfully'});
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error:'Internal server error'});
+        }
+    },
 };
 
 module.exports = UserController;
