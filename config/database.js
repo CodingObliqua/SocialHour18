@@ -1,16 +1,9 @@
-const mongoose = require('mongoose');
+const { connect, connection } = require('mongoose');
 
-async function connectToDatabase() {
-    try {
-        await mongoose.connect('mongodb://localhost/your-database-name', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true,
-        });
-        console.log('Connected to the database');
-    } catch (error) {
-        console.error('Error connecting to the database:', error);
-    }
-}
 
-module.exports = connectToDatabase;
+const connectionString =
+  process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/studentsDB';
+
+connect(connectionString);
+
+module.exports = connection;
