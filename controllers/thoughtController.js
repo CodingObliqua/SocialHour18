@@ -81,6 +81,50 @@ const ThoughtController = {
             res.status(500).json({ error: 'Internal server error'});
         }
     },
+
+    // POST route to create a reaction to a thought
+    createReaction: async (req, res) => {
+        try {
+            const thoughtId = req.params.thoughtId;
+            const newReactionData = req.body;
+            
+            const thought = await Thought.findById(thoughtId);
+
+            if(!thought) {
+                return res.status(404).json({ message: 'Thought not found'});
+            }
+
+            thought.reactions.push(newReactionData);
+            const updatedThought = await thought.save();
+
+            res.status(201).json(updatedThought);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error:'Internal server error'});
+        }
+    },
+
+    // DELETE route to remove a reaction from a thought 
+    removeReaction: async (req, res) => {
+        const thoughtId = req.params.thoughtId;
+        const reactionId = req.params.reactionId;
+
+        try {
+            const thought = await Thought.findById(thoughtId);
+
+            if (!thought) {
+                return res.status(404).json({ message: 'Thought not found'});
+            }
+
+            // Remove the reaction by filtering the thought's reactions array 
+            thought.reactions = thought.reactions.filter(reaction => reaction._id.string() !== reactionId);
+            await thought.save();
+            res.json({ message: 'Reaction removed successfully'});
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error'});
+        }
+    },
 };
 
 module.exports = ThoughtController;
